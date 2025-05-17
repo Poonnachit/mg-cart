@@ -26,6 +26,8 @@ jobs:
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
           yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
+          git config --global user.email "poonnachit.devops@myorder.ai"
+          git config --global user.name "Poonanchit"
           git commit -m "update image tag to ${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
           git push origin main
 
