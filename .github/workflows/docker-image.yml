@@ -27,21 +27,21 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: poonnachitdevops/mg-app:develop-${{ github.sha }}
+          tags: docker.io/poonnachitdevops/mg-app:develop-${{ github.sha }}
 
       - name: Build and push
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: poonnachitdevops/mg-app:sut-${{ github.sha }}
+          tags: docker.io/poonnachitdevops/mg-app:sut-${{ github.sha }}
 
       - name: Build and push
         if: startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: poonnachitdevops/mg-app:production-${{ github.sha }}
+          tags: docker.io/poonnachitdevops/mg-app:production-${{ github.sha }}
 
 
   update-gitops:
@@ -53,7 +53,7 @@ jobs:
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:develop-${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:develop-${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
           git commit -m "update image tag to mg-app to develop-${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
@@ -63,7 +63,7 @@ jobs:
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:sut-${{ github.sha }}"' sut/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:sut-${{ github.sha }}"' sut/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
           git commit -m "update image tag to mg-app to sut-${{ github.sha }}" sut/pedjeab/mg-cart/deployment.yaml --allow-empty
@@ -73,7 +73,7 @@ jobs:
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:production-${{ github.sha }}"' production/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:production-${{ github.sha }}"' production/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
           git commit -m "update image tag to mg-app to production-${{ github.sha }}" production/pedjeab/mg-cart/deployment.yaml --allow-empty
