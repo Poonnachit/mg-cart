@@ -24,10 +24,10 @@ jobs:
       - name: Update GitOps
         run: |
           echo ${{ secrets.PAT }} | gh auth login --with-token
-          gh clone git@github.com:Poonnachit/mg-nod-prod-manifest.git
+          git clone git@github.com:Poonnachit/mg-nod-prod-manifest.git
           yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
-          gh commit -m "update image tag to ${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
-          gh push origin main
+          git commit -m "update image tag to ${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git push origin main
 
 
         
