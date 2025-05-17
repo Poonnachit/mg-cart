@@ -23,9 +23,6 @@ jobs:
           tags: poonnachitdevops/mg-app:${{ github.sha }}
       - name: Update GitOps
         run: |
-          git config --global user.email "poonnachitam@gmail.com"
-          git config --global user.name "GitHub Actions"
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_GITOPS }}
           git clone git@github.com:Poonnachit/mg-nod-prod-manifest.git
           yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
           git commit -m "update image tag to ${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
