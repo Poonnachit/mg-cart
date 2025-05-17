@@ -2,6 +2,11 @@ name: ci
 
 on:
   push:
+    branches:
+      - develop
+      - main
+    tags:
+      - *-RELEASE
 
 jobs:
   docker:
@@ -16,12 +21,34 @@ jobs:
         uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
+
       - name: Build and push
+        if: ${{ github.bash_ref == "develop" }}
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: poonnachitdevops/mg-app:${{ github.sha }}
+          tags: poonnachitdevops/mg-app:develop-${{ github.sha }}
+
+      - name: Build and push
+        if: ${{ github.bash_ref == "main" }}
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: poonnachitdevops/mg-app:sut-${{ github.sha }}
+
+      - name: Build and push
+        if: ${{ github.ref_type == "tag" }}
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: poonnachitdevops/mg-app:release-${{ github.sha }}
+
+
+  update-gitops:
+    runs-on: ubuntu-latest
+    steps:  
       - name: Update GitOps
+        if: ${{ github.bash_ref == "main" }}
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
