@@ -6,7 +6,7 @@ on:
       - develop
       - main
     tags:
-      - *-RELEASE
+      - "*-RELEASE"
 
 jobs:
   docker:
