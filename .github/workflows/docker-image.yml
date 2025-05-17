@@ -22,32 +22,31 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Set short git commit SHA
-        id: vars
+      - name: Get short SHA
+        id: get-short-sha
         run: |
-          calculatedSha=$(git rev-parse --short ${{ github.sha }})
-          echo "COMMIT_SHORT_SHA=$calculatedSha" >> $GITHUB_ENV
+          echo ${{github.sha}} | cut -c 1-7 >> $GITHUB_OUTPUT
 
       - name: Build and push
         if: github.ref == 'refs/heads/develop'
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: docker.io/poonnachitdevops/mg-app:develop-${{ env.COMMIT_SHORT_SHA }}
+          tags: docker.io/poonnachitdevops/mg-app:develop-${{steps.get-short-sha.outputs.id}}
 
       - name: Build and push
         if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: docker.io/poonnachitdevops/mg-app:sut-${{ env.COMMIT_SHORT_SHA }}
+          tags: docker.io/poonnachitdevops/mg-app:sut-${{steps.get-short-sha.outputs.id}}
 
       - name: Build and push
         if: startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
         with:
           push: true
-          tags: docker.io/poonnachitdevops/mg-app:production-${{ env.COMMIT_SHORT_SHA }}
+          tags: docker.io/poonnachitdevops/mg-app:production-${{steps.get-short-sha.outputs.id}}
 
 
   update-gitops:
@@ -59,30 +58,30 @@ jobs:
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:develop-${{ env.COMMIT_SHORT_SHA }}"' develop/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:develop-${{steps.get-short-sha.outputs.id}}"' develop/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to develop-${{ env.COMMIT_SHORT_SHA }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to develop-${{steps.get-short-sha.outputs.id}}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
           git push origin main
       - name: Update GitOps
         if: github.ref == 'refs/heads/main'
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:sut-${{ env.COMMIT_SHORT_SHA }}"' sut/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:sut-${{steps.get-short-sha.outputs.id}}"' sut/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to sut-${{ env.COMMIT_SHORT_SHA }}" sut/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to sut-${{steps.get-short-sha.outputs.id}}" sut/pedjeab/mg-cart/deployment.yaml --allow-empty
           git push origin main
       - name: Update GitOps
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:production-${{ env.COMMIT_SHORT_SHA }}"' production/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:production-${{steps.get-short-sha.outputs.id}}"' production/pedjeab/mg-cart/deployment.yaml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to production-${{ env.COMMIT_SHORT_SHA }}" production/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to production-${{steps.get-short-sha.outputs.id}}" production/pedjeab/mg-cart/deployment.yaml --allow-empty
           git push origin main
 
 
