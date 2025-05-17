@@ -23,21 +23,21 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push
-        if: ${{ github.base_ref == "develop" }}
+        if: github.ref == 'refs/heads/develop'
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: poonnachitdevops/mg-app:develop-${{ github.sha }}
 
       - name: Build and push
-        if: ${{ github.base_ref == "main" }}
+        if: github.ref == 'refs/heads/main'
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: poonnachitdevops/mg-app:sut-${{ github.sha }}
 
       - name: Build and push
-        if: ${{ github.ref_type == "tag" }}
+        if: startsWith(github.ref, 'refs/tags/')
         uses: docker/build-push-action@v6
         with:
           push: true
@@ -48,7 +48,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:  
       - name: Update GitOps
-        if: ${{ github.base_ref == "main" }}
+        if: github.ref == 'refs/heads/main'
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
