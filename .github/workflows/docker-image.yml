@@ -7,21 +7,29 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      -
-        name: Login to Docker Hub
+      - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ vars.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      -
-        name: Set up QEMU
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
-      -
-        name: Set up Docker Buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      -
-        name: Build and push
+      - name: Build and push
         uses: docker/build-push-action@v6
         with:
           push: true
           tags: poonnachitdevops/mg-app:${{ github.sha }}
+      - name: Update GitOps
+        run: |
+          git config --global user.email "poonnachitam@gmail.com"
+          git config --global user.name "GitHub Actions"
+          ssh -o StrictHostKeyChecking=no -i ${{ secrets.SSH_KEY_GITOPS }}
+          git clone git@github.com:Poonnachit/mg-nod-prod-manifest.git
+          yq -i '.spec.template.spec.containers[0].image="poonnachitdevops/mg-app:${{ github.sha }}"' develop/pedjeab/mg-cart/deployment.yaml
+          git commit -m "update image tag to ${{ github.sha }}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git push origin main
+
+
+        
