@@ -68,30 +68,30 @@ jobs:
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:develop-${{steps.set_sha.outputs.short_sha}}"' develop/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:develop-${{steps.set_sha.outputs.short_sha}}"' develop/pedjeab/mg-cart/values.yml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to develop-${{steps.set_sha.outputs.short_sha}}" develop/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to develop-${{steps.set_sha.outputs.short_sha}}" develop/pedjeab/mg-cart/values.yml --allow-empty
           git push origin main
       - name: Update GitOps
         if: github.ref == 'refs/heads/main'
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:sut-${{steps.set_sha.outputs.short_sha}}"' sut/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:sut-${{steps.set_sha.outputs.short_sha}}"' sut/pedjeab/mg-cart/values.yml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to sut-${{steps.set_sha.outputs.short_sha}}" sut/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to sut-${{steps.set_sha.outputs.short_sha}}" sut/pedjeab/mg-cart/values.yml --allow-empty
           git push origin main
       - name: Update GitOps
         if: startsWith(github.ref, 'refs/tags/')
         run: |
           git clone https://update-gitops:${{ secrets.PAT }}@github.com/Poonnachit/mg-nod-prod-manifest.git
           cd mg-nod-prod-manifest
-          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:production-${{steps.set_sha.outputs.short_sha}}"' production/pedjeab/mg-cart/deployment.yaml
+          yq -i '.spec.template.spec.containers[0].image="docker.io/poonnachitdevops/mg-app:production-${{steps.set_sha.outputs.short_sha}}"' production/pedjeab/mg-cart/values.yml
           git config --global user.email "poonnachit.devops@myorder.ai"
           git config --global user.name "Poonanchit"
-          git commit -m "update image tag to mg-app to production-${{steps.set_sha.outputs.short_sha}}" production/pedjeab/mg-cart/deployment.yaml --allow-empty
+          git commit -m "update image tag to mg-app to production-${{steps.set_sha.outputs.short_sha}}" production/pedjeab/mg-cart/values.yml --allow-empty
           git push origin main
 
 
